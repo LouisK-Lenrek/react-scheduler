@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { weekWidth, dayWidth } from "@/constants";
+import { getCols } from "./getCols";
 
 export type DatesRange = {
   startDate: dayjs.Dayjs;
@@ -12,16 +12,33 @@ export type ParsedDatesRange = {
 };
 
 export const getDatesRange = (date: dayjs.Dayjs, zoom: number): DatesRange => {
-  const cols =
-    zoom === 0
-      ? Math.ceil(window.innerWidth / weekWidth) * 3
-      : Math.ceil(window.innerWidth / dayWidth) * 3;
-  const startDate =
-    zoom === 0
-      ? date.subtract(cols / 3 + 3, "weeks").set("day", 1)
-      : date.subtract(cols / 3 + 3, "days");
+  const colsOffset = getCols(zoom) / 2;
 
-  const endDate = zoom === 0 ? startDate.add(cols, "weeks") : startDate.add(cols, "days");
+  let startDate;
+  switch (zoom) {
+    case 1:
+      startDate = date.subtract(colsOffset, "days");
+      break;
+    case 2:
+      startDate = date.subtract(colsOffset, "hours");
+      break;
+    default:
+      startDate = date.subtract(colsOffset, "weeks");
+      break;
+  }
+
+  let endDate;
+  switch (zoom) {
+    case 1:
+      endDate = date.add(colsOffset, "days");
+      break;
+    case 2:
+      endDate = date.add(colsOffset, "hours");
+      break;
+    default:
+      endDate = date.add(colsOffset, "weeks");
+      break;
+  }
 
   return {
     startDate,

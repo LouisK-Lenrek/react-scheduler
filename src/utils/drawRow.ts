@@ -1,9 +1,7 @@
-import { theme } from "@/styles";
+import { Theme } from "@/styles";
 import { DrawRowConfig } from "@/types/global";
 
-const defaultFillStyle = theme.colors.white;
-
-export const drawRow = (config: DrawRowConfig) => {
+export const drawRow = (config: DrawRowConfig, theme: Theme) => {
   const {
     ctx,
     x,
@@ -16,23 +14,39 @@ export const drawRow = (config: DrawRowConfig) => {
     isBottomRow,
     fillStyle,
     topText,
-    bottomText
+    bottomText,
+    labelBetweenCells
   } = config;
 
   ctx.beginPath();
-  ctx.strokeStyle = theme.colors.grey400;
+  ctx.strokeStyle = theme.colors.border;
   ctx.setLineDash([]);
 
   if (label && font && textYPos) {
-    ctx.fillStyle = defaultFillStyle;
+    ctx.fillStyle = theme.colors.gridBackground;
     ctx.fillRect(x, y, width, height);
-    ctx.strokeRect(x + 0.5, y + 0.5, width, height);
+
+    if (labelBetweenCells) {
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + width, y);
+      ctx.stroke();
+
+      ctx.moveTo(x, y + height);
+      ctx.lineTo(x + width, y + height);
+      ctx.stroke();
+
+      ctx.moveTo(x + width / 2, y + height);
+      ctx.lineTo(x + width / 2, y + height - 5);
+      ctx.stroke();
+    } else {
+      ctx.strokeRect(x + 0.5, y + 0.5, width, height);
+    }
 
     ctx.font = font;
 
     const textXPos = x + width / 2 - ctx.measureText(label).width / 2;
     ctx.textBaseline = "middle";
-    ctx.fillStyle = theme.colors.grey600;
+    ctx.fillStyle = theme.colors.placeholder;
     ctx.fillText(label, textXPos, textYPos);
   }
   if (isBottomRow && fillStyle && topText && bottomText) {

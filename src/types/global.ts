@@ -1,11 +1,16 @@
-export const allZoomLevel = [0, 1] as const;
+import { LocaleType } from "@/context/LocaleProvider/types";
+import { ColorType } from "@/styles";
+
+export const allZoomLevel = [0, 1, 2] as const;
 
 export type FilterButtonState = -1 | 0 | 1;
 
 type ZoomLevelTuple = typeof allZoomLevel;
 
 export type ZoomLevel = ZoomLevelTuple[number];
-export type LangCodes = "en" | "pl";
+
+export type LangCodes = "en" | "pl" | "de" | "lt";
+
 export type Config = {
   zoom: ZoomLevel;
   /**
@@ -16,9 +21,9 @@ export type Config = {
    */
   filterButtonState?: number;
   /**
-   * Language code: "en" | "pl"
+   * Language code: "en" | "pl" | "de"
    */
-  lang?: LangCodes;
+  lang?: LangCodes | string;
   isFiltersButtonVisible?: boolean;
   maxRecordsPerPage?: number;
   /**
@@ -28,6 +33,29 @@ export type Config = {
    * @default false
    */
   includeTakenHoursOnWeekendsInDayView?: boolean;
+
+  /**
+   * show tooltip when hovering over tiles items
+   * @default true
+   */
+  showTooltip?: boolean;
+  translations?: LocaleType[];
+  /**
+   * show toggle button for changing theme (light/dark)
+   */
+  showThemeToggle?: boolean;
+  /**
+   * default theme (light/dark)
+   * when theme toggle is displayed - this is a default value of the toggle
+   * @default "light"
+   */
+  defaultTheme?: "light" | "dark";
+  theme?: Theme;
+};
+
+export type Theme = {
+  light?: Partial<Record<ColorType, string>>;
+  dark?: Partial<Record<ColorType, string>>;
 };
 
 export type SchedulerData = SchedulerRow[];
@@ -89,6 +117,7 @@ export type SchedulerProjectData = {
 };
 
 export type Day = {
+  hour: number;
   dayName: string;
   dayOfMonth: number;
   weekOfYear: number;
@@ -125,6 +154,7 @@ export type DrawRowConfig = {
   fillStyle?: string;
   topText?: BottomRowText;
   bottomText?: BottomRowText;
+  labelBetweenCells?: boolean;
 };
 
 export type TileProperties = {

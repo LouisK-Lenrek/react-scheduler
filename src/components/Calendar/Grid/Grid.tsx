@@ -1,9 +1,11 @@
 import { forwardRef, useCallback, useEffect, useRef } from "react";
+import { useTheme } from "styled-components";
 import { drawGrid } from "@/utils/drawGrid/drawGrid";
-import { boxHeight, canvasWrapperId, leftColumnWidth, screenWidthMultiplier } from "@/constants";
+import { boxHeight, canvasWrapperId, leftColumnWidth, outsideWrapperId } from "@/constants";
 import { Loader, Tiles } from "@/components";
 import { useCalendar } from "@/context/CalendarProvider";
 import { resizeCanvas } from "@/utils/resizeCanvas";
+import { getCanvasWidth } from "@/utils/getCanvasWidth";
 import { GridProps } from "./types";
 import { StyledCanvas, StyledInnerWrapper, StyledSpan, StyledWrapper } from "./styles";
 
@@ -16,14 +18,16 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
   const refRight = useRef<HTMLSpanElement>(null);
   const refLeft = useRef<HTMLSpanElement>(null);
 
+  const theme = useTheme();
+
   const handleResize = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      const width = window.innerWidth * screenWidthMultiplier;
+      const width = getCanvasWidth();
       const height = rows * boxHeight + 1;
       resizeCanvas(ctx, width, height);
-      drawGrid(ctx, zoom, rows, cols, startDate);
+      drawGrid(ctx, zoom, rows, cols, startDate, theme);
     },
-    [cols, startDate, rows, zoom]
+    [cols, startDate, rows, zoom, theme]
   );
 
   useEffect(() => {
@@ -50,8 +54,9 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
 
   useEffect(() => {
     if (!refRight.current) return;
-    const observerRight = new IntersectionObserver((e) =>
-      e[0].isIntersecting ? handleScrollNext() : null
+    const observerRight = new IntersectionObserver(
+      (e) => (e[0].isIntersecting ? handleScrollNext() : null),
+      { root: document.getElementById(outsideWrapperId) }
     );
     observerRight.observe(refRight.current);
 
@@ -62,7 +67,10 @@ const Grid = forwardRef<HTMLDivElement, GridProps>(function Grid(
     if (!refLeft.current) return;
     const observerLeft = new IntersectionObserver(
       (e) => (e[0].isIntersecting ? handleScrollPrev() : null),
-      { rootMargin: `0px 0px 0px -${leftColumnWidth}px` }
+      {
+        root: document.getElementById(outsideWrapperId),
+        rootMargin: `0px 0px 0px -${leftColumnWidth}px`
+      }
     );
     observerLeft.observe(refLeft.current);
 
