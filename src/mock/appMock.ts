@@ -13,11 +13,9 @@ const getRandomWords = (amount?: number) =>
   amount ? faker.random.words(amount) : faker.random.word();
 
 const getRandomDates = (year: number) => {
-  const startDate = faker.date.between(new Date(year, 0, 1), new Date(year + 1, 0, 1));
-  const endDate = faker.date.between(
-    startDate,
-    new Date(year + Math.ceil(Math.random() * 4), 0, 1)
-  );
+  const startDate = faker.date.between(new Date(year, 0, 1), new Date(year, 11, 31));
+  const duration = Math.ceil(Math.random() * 2) + 1; // Durée entre 2 et 3 jours
+  const endDate = dayjs(startDate).add(duration, "day").toDate();
 
   return { startDate, endDate };
 };
