@@ -2,7 +2,7 @@ import { dayWidth, singleDayWidth, zoom2ColumnWidth } from "@/constants";
 import { DatesRange } from "./getDatesRange";
 
 export const getTileXAndWidth = (item: DatesRange, range: DatesRange, zoom: number) => {
-  let cellWidth;
+  let cellWidth:number;
   switch (zoom) {
     case 0:
       cellWidth = singleDayWidth;
